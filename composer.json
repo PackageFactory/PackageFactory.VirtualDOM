@@ -1,0 +1,13 @@
+{
+    "name": "packagefactory/virtualdom",
+    "description": "A Virtual DOM implementation for PHP",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+    },
+    "autoload": {
+        "psr-4": {
+            "PackageFactory\\VirtualDOM\\": "src/"
+        }
+    }
+}
