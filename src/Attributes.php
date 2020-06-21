@@ -12,7 +12,7 @@ final class Attributes implements \IteratorAggregate, \Countable
      * @param Attribute ...$attributes
      * @throws InvariantException
      */
-    public function __construct(
+    private function __construct(
         Attribute ...$attributes
     ) {
         $this->attributes = [];
@@ -39,26 +39,36 @@ final class Attributes implements \IteratorAggregate, \Countable
     }
 
     /**
+     * @param array|Attribute $attributes 
+     * @return self
+     * @throws InvariantException
+     */
+    public static function createFromArray(array $attributes): self
+    {
+        return new self(...$attributes);
+    }
+
+    /**
      * @param array<string, string|bool> $data 
      * @return self
      * @throws InvariantException
      */
-    public static function createFromArray(array $data): self
+    public static function createFromJsonArray(array $data): self
     {
         /** @var array|Attribute[] $attributes */
         $attributes = [];
         foreach ($data as $name => $value) {
             Invariant::check(
-                is_string($value) || is_bool($value),
+                is_string($value) || is_array($value) || is_object($value) || is_bool($value),
                 sprintf(
-                    'Value for attribute with name "%s" must either be string or boolean. ' .
+                    'Value for attribute with name "%s" must either be string, array, object or boolean. ' .
                     'Got "%s" instead.',
                     $name,
                     gettype($value)
                 )
             );
 
-            if (is_string($value)) {
+            if (is_string($value) || is_array($value) || is_object($value)) {
                 $attributes[] = Attribute::createFromNameAndValue($name, $value);
             }
             else if ($value) {

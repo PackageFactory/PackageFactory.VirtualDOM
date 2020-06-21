@@ -29,17 +29,17 @@ final class Attribute
     /**
      * @param string $name
      * @param boolean $isBoolean
-     * @param string|null $value
+     * @param string|array|object|null $value
      * @throws InvariantException
      */
     private function __construct(
         string $name,
         bool $isBoolean,
-        ?string $value = null
+        $value = null
     ) {
         $this->name = mb_strtolower($name);
         $this->isBoolean = $isBoolean;
-        $this->value = $value;
+        $this->value = null;
 
         Invariant::check(
             (bool) preg_match(self::PATTERN_ATTRIBUTE_NAME, $this->name),
@@ -52,25 +52,52 @@ final class Attribute
 
         if ($this->isBoolean) {
             Invariant::check(
-                $this->value === null,
+                $value === null,
                 sprintf('Boolean attribute "%s" must not have a value', $this->name)
             );
         } 
         else {
             Invariant::check(
-                $this->value !== null,
+                $value !== null,
                 sprintf('Non-Boolean attribute "%s" must have a value', $this->name)
             );
+
+            Invariant::check(
+                is_string($value) || is_array($value) || is_object($value),
+                sprintf(
+                    'Attribute "%s" value must be of type string, array or object. Got "%".', 
+                    $this->name,
+                    gettype($value)
+                )
+            );
+
+            if (is_array($value) || is_object($value)) {
+                $concatenatedValue = [];
+
+
+                foreach ($value as $key => $segment) {
+                    if (is_numeric($key) && is_string($segment)) {
+                        $concatenatedValue[] = $segment;
+                    } elseif (is_string($key) && $segment) {
+                        $concatenatedValue[] = $key;
+                    }
+                }
+
+                $this->value = trim(implode(' ', $concatenatedValue));
+            }
+            else {
+                $this->value = $value;
+            }
         }
     }
 
     /**
      * @param string $name
-     * @param string $value
+     * @param string|array $value
      * @return self
      * @throws InvariantException
      */
-    public static function createFromNameAndValue(string $name, string $value): self
+    public static function createFromNameAndValue(string $name, $value): self
     {
         return new self($name, false, $value);
     }
