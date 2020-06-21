@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 namespace PackageFactory\VirtualDOM;
 
-final class Text extends Node
+final class DangerouslyUnescapedText extends Node
 {
     /**
      * @var string
@@ -14,7 +14,7 @@ final class Text extends Node
     private function __construct(
         string $value
     ) {
-        $this->value = Escaper::escapeTextNodeValue($value);
+        $this->value = $value;
     }
 
     /**
