@@ -199,21 +199,4 @@ final class Attribute
             return $this->value === $other->getValue();
         }
     }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        if ($this->isBoolean) {
-            return ' ' . $this->name;
-        }
-        else {
-            return sprintf(
-                ' %s="%s"',
-                $this->name,
-                Escaper::escapeAttributeValue($this->value)
-            );
-        }
-    }
 }

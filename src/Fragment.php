@@ -46,12 +46,4 @@ final class Fragment extends Node
             NodeList::create(...$children)
         );
     }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return (string) $this->children;
-    }
 }

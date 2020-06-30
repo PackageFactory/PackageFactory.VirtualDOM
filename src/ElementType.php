@@ -82,12 +82,4 @@ final class ElementType
     {
         return in_array($this->tagName, self::VOID_ELEMENTS);
     }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return $this->getTagName();
-    }
 }

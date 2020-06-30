@@ -3,5 +3,4 @@ namespace PackageFactory\VirtualDOM;
 
 abstract class Node
 {
-    abstract public function __toString(): string;
 }

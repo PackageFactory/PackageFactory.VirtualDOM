@@ -249,16 +249,4 @@ final class Attributes implements \IteratorAggregate, \Countable
     {
         return count($this->attributes);
     }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        if ($this->count() === 0) {
-            return '';
-        } else {
-            return implode('', $this->attributes);
-        }
-    }
 }

@@ -38,7 +38,7 @@ final class HTML5StringRenderer
                 return sprintf(
                     '<%1$s%2$s>%3$s</%1$s>',
                     $node->getElementType()->getTagName(),
-                    $node->getAttributes(),
+                    self::renderAttributes($node->getAttributes()),
                     self::renderNodeList($node->getChildren())
                 );
             }

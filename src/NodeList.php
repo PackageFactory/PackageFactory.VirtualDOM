@@ -145,12 +145,4 @@ final class NodeList implements \IteratorAggregate, \Countable
     {
         return count($this->nodes);
     }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return implode('', $this->nodes);
-    }
 }

@@ -148,37 +148,4 @@ final class Element extends Node
             NodeList::create(...$children)
         );
     }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        if ($this->children->getIsEmpty()) {
-            if ($this->elementType->getIsVoid()) {
-                return sprintf(
-                    '<%s%s/>',
-                    $this->elementType,
-                    $this->attributes
-                );
-            }
-            else {
-                return sprintf(
-                    '<%s%s></%s>',
-                    $this->elementType,
-                    $this->attributes,
-                    $this->elementType
-                );
-            }
-        }
-        else {
-            return sprintf(
-                '<%s%s>%s</%s>',
-                $this->elementType,
-                $this->attributes,
-                $this->children,
-                $this->elementType
-            );
-        }
-    }
 }
