@@ -29,6 +29,14 @@ final class DangerouslyUnescapedText extends Node
     /**
      * @return string
      */
+    public function getValue(): string
+    {
+        return $this->value;
+    }
+
+    /**
+     * @return string
+     */
     public function __toString(): string
     {
         return $this->value;
