@@ -30,10 +30,10 @@ final class NodeList implements \IteratorAggregate, \Countable
      * @param string $data
      * @return self
      */
-    public static function createFromString(string $data): self
+    public static function fromString(string $data): self
     {
         return new self(
-            Text::createFromString($data)
+            Text::fromString($data)
         );
     }
 
@@ -41,9 +41,9 @@ final class NodeList implements \IteratorAggregate, \Countable
      * @param array $data
      * @return self
      */
-    public static function createFromArray(array $data): self
+    public static function fromArray(array $data): self
     {
-        throw new \Exception('@TODO: NodeList::createFromString is not implemented yet!');
+        throw new \Exception('@TODO: NodeList::fromString is not implemented yet!');
     }
 
     /**

@@ -9,7 +9,7 @@ final class Augmenter
         ?ElementType $fallbackElementType = null
     ): Node {
         if ($fallbackElementType === null) {
-            $fallbackElementType = ElementType::createFromTagName('div');
+            $fallbackElementType = ElementType::fromTagName('div');
         }
         
         if ($node instanceof Element) {

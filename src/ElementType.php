@@ -62,7 +62,7 @@ final class ElementType
      * @return self
      * @throws InvariantException
      */
-    public static function createFromTagName(string $tagName): self
+    public static function fromTagName(string $tagName): self
     {
         return new self($tagName);
     }

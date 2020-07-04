@@ -43,7 +43,7 @@ final class Attributes implements \IteratorAggregate, \Countable
      * @return self
      * @throws InvariantException
      */
-    public static function createFromArray(array $attributes): self
+    public static function fromArray(array $attributes): self
     {
         return new self(...$attributes);
     }
@@ -53,7 +53,7 @@ final class Attributes implements \IteratorAggregate, \Countable
      * @return self
      * @throws InvariantException
      */
-    public static function createFromJsonArray(array $data): self
+    public static function fromJsonArray(array $data): self
     {
         /** @var array|Attribute[] $attributes */
         $attributes = [];
@@ -69,7 +69,7 @@ final class Attributes implements \IteratorAggregate, \Countable
             );
 
             if (is_string($value) || is_array($value) || is_object($value)) {
-                $attributes[] = Attribute::createFromNameAndValue($name, $value);
+                $attributes[] = Attribute::fromNameAndValue($name, $value);
             }
             else if ($value) {
                 $attributes[] = Attribute::createBooleanFromName($name);

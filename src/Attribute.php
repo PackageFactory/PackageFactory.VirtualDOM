@@ -97,7 +97,7 @@ final class Attribute
      * @return self
      * @throws InvariantException
      */
-    public static function createFromNameAndValue(string $name, $value): self
+    public static function fromNameAndValue(string $name, $value): self
     {
         return new self($name, false, $value);
     }
@@ -164,13 +164,13 @@ final class Attribute
             );
         }
         else if ($this->isBoolean) {
-            return self::createFromNameAndValue(
+            return self::fromNameAndValue(
                 $attribute->getName(), 
                 $attribute->getValue()
             );
         }
         else {
-            return self::createFromNameAndValue(
+            return self::fromNameAndValue(
                 $attribute->getName(), 
                 $this->value . ' ' . $attribute->getValue()
             );

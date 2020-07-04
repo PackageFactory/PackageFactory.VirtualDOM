@@ -68,7 +68,7 @@ final class Element extends Node
      * } $data
      * @return self
      */
-    public function createFromShape(array $data): self
+    public function fromShape(array $data): self
     {
         Invariant::check(
             isset($data['tagName']),
@@ -76,24 +76,24 @@ final class Element extends Node
         );
 
         if (isset($data['attributes'])) {
-            $attributes = Attributes::createFromArray($data['attributes']);
+            $attributes = Attributes::fromArray($data['attributes']);
         }
         else {
             $attributes = Attributes::createEmpty();
         }
 
         if (isset($data['children']) && is_string($data['children'])) {
-            $children = NodeList::createFromString($data['children']);
+            $children = NodeList::fromString($data['children']);
         }
         else if (isset($data['children']) && is_array($data['children'])) {
-            $children = NodeList::createFromArray($data['children']);
+            $children = NodeList::fromArray($data['children']);
         }
         else {
             $children = NodeList::createEmpty();
         }
 
         return new self(
-            ElementType::createFromTagName($data['tagName']),
+            ElementType::fromTagName($data['tagName']),
             $attributes,
             $children
         );
