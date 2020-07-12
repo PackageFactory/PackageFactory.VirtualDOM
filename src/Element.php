@@ -36,7 +36,7 @@ final class Element extends Node
         if ($this->elementType->getIsVoid()) {
             Invariant::check(
                 $this->children->getIsEmpty(),
-                sprintf('Element <%s> must not have children', $this->elementType)
+                sprintf('Element <%s> must not have children', $this->elementType->getTagName())
             );
         }
     }
