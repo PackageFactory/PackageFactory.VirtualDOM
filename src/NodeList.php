@@ -96,7 +96,7 @@ final class NodeList implements \IteratorAggregate, \Countable
             Invariant::check(
                 $prependedNode !== $node,
                 'Prepended node "%s" must not be already in NodeList',
-                substr((string) $prependedNode, 0, 10)
+                substr(get_class($prependedNode), 0, 10)
             );
 
             $nextNodes[] = $node;
@@ -117,7 +117,7 @@ final class NodeList implements \IteratorAggregate, \Countable
             Invariant::check(
                 $appendedNode !== $node,
                 'Appended node "%s" must not be already in NodeList',
-                substr((string) $appendedNode, 0, 10)
+                substr(get_class($appendedNode), 0, 10)
             );
 
             $nextNodes[] = $node;
