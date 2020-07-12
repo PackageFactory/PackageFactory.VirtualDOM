@@ -1,6 +1,12 @@
 <?php declare(strict_types=1);
 namespace PackageFactory\VirtualDOM;
 
-abstract class Node
+use PackageFactory\VirtualDOM\Rendering\RenderableInterface;
+
+abstract class Node implements RenderableInterface
 {
+    public function getAsVirtualDOMNode(): Node
+    {
+        return $this;
+    }
 }

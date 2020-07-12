@@ -14,10 +14,19 @@ use PackageFactory\VirtualDOM\Text;
 final class HTML5StringRenderer
 {
     /**
+     * @param RenderableInterface $renderable
+     * @return string
+     */
+    public static function render(RenderableInterface $renderable): string
+    {
+        return self::renderNode($renderable->getAsVirtualDOMNode());
+    }
+
+    /**
      * @param Node $node
      * @return string
      */
-    public static function render(Node $node): string
+    public static function renderNode(Node $node): string
     {
         if ($node instanceof Element) {
             if ($node->getChildren()->getIsEmpty()) {
