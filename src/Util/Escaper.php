@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-namespace PackageFactory\VirtualDOM;
+namespace PackageFactory\VirtualDOM\Util;
 
 final class Escaper
 {
