@@ -83,7 +83,12 @@ final class Head implements ComponentInterface
         $visitor->onElement(
             Element::fromArray([
                 'name' => 'head',
-                'children' => $this->children
+                'children' => array_merge(
+                    $this->metas,
+                    [Element::fromArray(['name' => 'title', 'children' => [$this->title]])],
+                    $this->links,
+                    $this->scripts
+                )
             ])
         );
     }
