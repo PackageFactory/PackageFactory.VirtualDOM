@@ -6,15 +6,7 @@ use PackageFactory\VirtualDOM\Util\Stringifier;
 final class Attribute
 {
     /**
-     * Based on https://www.w3.org/TR/2011/WD-html5-20110525/syntax.html#attributes-0
-     * But more restrictive
-     *
-     * @var string
-     */
-    private const PATTERN_ATTRIBUTE_NAME = '/^[a-z][-_a-z0-9]*$/';
-
-    /**
-     * @var string
+     * @var AttributeName
      */
     private $name;
 
@@ -24,22 +16,17 @@ final class Attribute
     private $value;
 
     /**
-     * @param string $name
+     * @param AttributeName $name
      * @param string|boolean $value
      * @throws InvariantException
      */
     private function __construct(
-        string $name,
+        AttributeName $name,
         $value
     ) {
-        if (!preg_match(self::PATTERN_ATTRIBUTE_NAME, $name)) {
-            throw AttributeIsInvalid::
-                becauseItsNameDoesNotMatchTheRequiredPattern($name, self::PATTERN_ATTRIBUTE_NAME);
-        }
-
         if (!is_string($value) && !is_bool($value)) {
             throw AttributeIsInvalid::
-                becauseItsValueIsNeitherOfTypeStringNorBoolean($name, $value);
+                becauseItsValueIsNeitherOfTypeStringNorBoolean((string) $name, $value);
         }
 
         $this->name = $name;
@@ -57,13 +44,13 @@ final class Attribute
             $value = Stringifier::stringify($value);
         }
 
-        return new self($name, $value);
+        return new self(AttributeName::fromString($name), $value);
     }
 
     /**
-     * @return string
+     * @return AttributeName
      */
-    public function getName(): string
+    public function getName(): AttributeName
     {
         return $this->name;
     }
@@ -71,7 +58,7 @@ final class Attribute
     /**
      * @return bool
      */
-    public function getIsBoolean(): bool
+    public function isBoolean(): bool
     {
         return is_bool($this->value);
     }
@@ -90,7 +77,7 @@ final class Attribute
      */
     public function withAppendedValue(string $value): self
     {
-        if ($this->getIsBoolean()) {
+        if ($this->isBoolean()) {
             return new self($this->name, $value);
         } else {
             return new self($this->name, $this->value . ' ' . $value);

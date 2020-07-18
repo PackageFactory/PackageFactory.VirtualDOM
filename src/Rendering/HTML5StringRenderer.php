@@ -1,72 +1,89 @@
 <?php declare(strict_types=1);
 namespace PackageFactory\VirtualDOM\Rendering;
 
-use PackageFactory\VirtualDOM\Attribute;
-use PackageFactory\VirtualDOM\Attributes;
-use PackageFactory\VirtualDOM\DangerouslyUnescapedText;
-use PackageFactory\VirtualDOM\Element;
-use PackageFactory\VirtualDOM\Escaper;
-use PackageFactory\VirtualDOM\Fragment;
-use PackageFactory\VirtualDOM\Node;
-use PackageFactory\VirtualDOM\NodeList;
-use PackageFactory\VirtualDOM\Text;
+use PackageFactory\VirtualDOM\Model\Attribute;
+use PackageFactory\VirtualDOM\Model\Attributes;
+use PackageFactory\VirtualDOM\Model\ComponentInterface;
+use PackageFactory\VirtualDOM\Model\Element;
+use PackageFactory\VirtualDOM\Model\Fragment;
+use PackageFactory\VirtualDOM\Model\Text;
+use PackageFactory\VirtualDOM\Model\VisitorInterface;
 
-final class HTML5StringRenderer
+final class HTML5StringRenderer implements VisitorInterface
 {
     /**
-     * @param RenderableInterface $renderable
-     * @return string
+     * @var string
      */
-    public static function render(RenderableInterface $renderable): string
+    private $result;
+
+    /**
+     * 
+     */
+    private function __construct()
     {
-        return self::renderNode($renderable->getAsVirtualDOMNode());
+        $this->result = '';
     }
 
     /**
-     * @param Node $node
-     * @return string
+     * @param Element $element
+     * @return void
      */
-    public static function renderNode(Node $node): string
+    public function onElement(Element $element): void
     {
-        if ($node instanceof Element) {
-            if ($node->getChildren()->getIsEmpty()) {
-                if ($node->getElementType()->getIsVoid()) {
-                    return sprintf(
-                        '<%s%s/>',
-                        $node->getElementType()->getTagName(),
-                        self::renderAttributes($node->getAttributes())
-                    );
-                } else {
-                    return sprintf(
-                        '<%1$s%2$s></%1$s>',
-                        $node->getElementType()->getTagName(),
-                        self::renderAttributes($node->getAttributes())
-                    );
-                }
+        if ($element->getChildren()->isEmpty()) {
+            if ($element->getName()->isVoid()) {
+                $this->result .= sprintf(
+                    '<%s%s/>',
+                    $element->getName(),
+                    $this->renderAttributes($element->getAttributes())
+                );
             } else {
-                return sprintf(
-                    '<%1$s%2$s>%3$s</%1$s>',
-                    $node->getElementType()->getTagName(),
-                    self::renderAttributes($node->getAttributes()),
-                    self::renderNodeList($node->getChildren())
+                $this->result .=  sprintf(
+                    '<%1$s%2$s></%1$s>',
+                    $element->getName(),
+                    $this->renderAttributes($element->getAttributes())
                 );
             }
-        } elseif ($node instanceof Fragment) {
-            return self::renderNodeList($node->getChildren());
-        } elseif ($node instanceof Text) {
-            return $node->getValue();
-        } elseif ($node instanceof DangerouslyUnescapedText) {
-            return $node->getValue();
         } else {
-            throw RenderingFailed::becauseOfAnUnknownNodeClass($node);
+            $this->result .= sprintf(
+                '<%s%s>',
+                $element->getName(),
+                $this->renderAttributes($element->getAttributes())
+            );
+
+            foreach ($element->getChildren() as $child) {
+                $child->render($this);
+            }
+
+            $this->result .= sprintf('</%s>', $element->getName());
         }
+    }
+
+    /**
+     * @param Fragment $fragment
+     * @return void
+     */
+    public function onFragment(Fragment $fragment): void
+    {
+        foreach ($fragment->getChildren() as $child) {
+            $child->render($this);
+        }
+    }
+
+    /**
+     * @param Text $text
+     * @return void
+     */
+    public function onText(Text $text): void
+    {
+        $this->result .= (string) $text;
     }
 
     /**
      * @param Attributes $attributes
      * @return string
      */
-    public static function renderAttributes(Attributes $attributes): string
+    protected function renderAttributes(Attributes $attributes): string
     {
         if ($attributes->count() === 0) {
             return '';
@@ -74,7 +91,7 @@ final class HTML5StringRenderer
             $result = '';
 
             foreach ($attributes as $attribute) {
-                $result .= self::renderAttribute($attribute);
+                $result .= $this->renderAttribute($attribute);
             }
     
             return $result;
@@ -85,31 +102,27 @@ final class HTML5StringRenderer
      * @param Attribute $attribute
      * @return string
      */
-    public static function renderAttribute(Attribute $attribute): string
+    protected function renderAttribute(Attribute $attribute): string
     {
-        if ($attribute->getIsBoolean()) {
-            return ' ' . $attribute->getName();
+        if ($attribute->isBoolean()) {
+            if ($attribute->getValue() === true) {
+                return ' ' . $attribute->getName();
+            }
         } else {
-            return sprintf(
-                ' %s="%s"',
-                $attribute->getName(),
-                Escaper::escapeAttributeValue($attribute->getValue())
-            );
+            return sprintf(' %s="%s"', $attribute->getName(), $attribute->getValue());
         }
     }
 
     /**
-     * @param NodeList $nodeList
+     * @param ComponentInterface $component
      * @return string
      */
-    public static function renderNodeList(NodeList $nodeList): string 
+    public static function render(ComponentInterface $component): string
     {
-        $result = '';
+        $visitor = new self();
 
-        foreach ($nodeList as $node) {
-            $result .= self::render($node);
-        }
+        $component->render($visitor);
 
-        return $result;
+        return $visitor->result;
     }
 }

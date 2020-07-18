@@ -4,7 +4,8 @@ namespace PackageFactory\VirtualDOM\Model;
 interface ComponentInterface
 {
     /**
-     * @return Node
+     * @param VisitorInterface $visitor
+     * @return void
      */
-    public function render(): Node;
+    public function render(VisitorInterface $visitor): void;
 }

@@ -24,12 +24,12 @@ final class Attributes implements \IteratorAggregate, \Countable
     public static function fromArray(array $array): self
     {
         $attributes = [];
-        foreach ($attributes as $key => $value) {
-            if (!is_string($key)) {
+        foreach ($array as $name => $value) {
+            if (!is_string($name)) {
                 throw AttributeCannotBeCreated::becauseSourceArrayIsNotAssociative();
             }
 
-            $attributes[] = Attribute::fromNameAndValue($key, $value);
+            $attributes[$name] = Attribute::fromNameAndValue($name, $value);
         }
 
         return new self($attributes);
@@ -44,27 +44,27 @@ final class Attributes implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param string $attributeName
+     * @param AttributeName $attributeName
      * @return bool
      */
-    public function hasAttribute(string $attributeName): bool
+    public function hasAttribute(AttributeName $attributeName): bool
     {
-        return isset($this->attributes[$attributeName]);
+        return isset($this->attributes[(string) $attributeName]);
     }
 
     /**
-     * @param string $attributeName
+     * @param AttributeName $attributeName
      * @return Attribute
      * @throws InvariantException
      */
-    public function getAttribute(string $attributeName): Attribute
+    public function getAttribute(AttributeName $attributeName): Attribute
     {
-        if (!isset($this->attributes[$attributeName])) {
+        if (!$this->hasAttribute($attributeName)) {
             throw AttributesOperationIsNotPermitted::
-                becauseAttributeDoesNotExist('getAttribute', $attributeName);
+                becauseAttributeDoesNotExist('getAttribute', (string) $attributeName);
         }
 
-        return $this->attributes[$attributeName];
+        return $this->attributes[(string) $attributeName];
     }
 
     /**
@@ -73,9 +73,9 @@ final class Attributes implements \IteratorAggregate, \Countable
      */
     public function withNewAttribute(Attribute $newAttribute): Attributes
     {
-        if (isset($this->attributes[$newAttribute->getName()])) {
+        if ($this->hasAttribute($newAttribute->getName())) {
             throw AttributesOperationIsNotPermitted::
-                becauseAttributeAlreadyExists('withNewAttribute', $newAttribute->getName());
+                becauseAttributeAlreadyExists('withNewAttribute', (string) $newAttribute->getName());
         }
 
         $nextAttributes = [];
@@ -93,10 +93,9 @@ final class Attributes implements \IteratorAggregate, \Countable
      */
     public function withAppendedAttribute(Attribute $appendedAttribute): Attributes
     {
-        if (!isset($this->attributes[$appendedAttribute->getName()])) {
+        if (!$this->hasAttribute($appendedAttribute->getName())) {
             return $this->withNewAttribute($appendedAttribute);
-        }
-        else {
+        } else {
             $nextAttributes = [];
             foreach ($this->attributes as $attribute) {
                 if ($attribute->getName() === $appendedAttribute->getName()) {
@@ -117,9 +116,9 @@ final class Attributes implements \IteratorAggregate, \Countable
      */
     public function withReplacedAttribute(Attribute $replacedAttribute): Attributes
     {
-        if (!isset($this->attributes[$replacedAttribute->getName()])) {
+        if (!$this->hasAttribute($replacedAttribute->getName())) {
             throw AttributesOperationIsNotPermitted::
-                becauseAttributeDoesNotExist('withReplacedAttribute', $replacedAttribute->getName());
+                becauseAttributeDoesNotExist('withReplacedAttribute', (string) $replacedAttribute->getName());
         }
 
         $nextAttributes = [];
@@ -141,7 +140,7 @@ final class Attributes implements \IteratorAggregate, \Countable
      */
     public function withRemovedAttribute(Attribute $removedAttribute): Attributes
     {
-        if (!isset($this->attributes[$removedAttribute->getName()])) {
+        if (!$this->hasAttribute($removedAttribute->getName())) {
             throw AttributesOperationIsNotPermitted::
                 becauseAttributeDoesNotExist('withRemovedAttribute', $removedAttribute->getName());
         }
@@ -158,13 +157,43 @@ final class Attributes implements \IteratorAggregate, \Countable
 
     /**
      * @param Attributes $other
+     * @return Attributes
+     */
+    public function withShallowlyMergedAttributes(Attributes $other): Attributes
+    {
+        return new self(array_replace($this->attributes, iterator_to_array($other)));
+    }
+
+    /**
+     * @param Attributes $other
+     * @return Attributes
+     */
+    public function withDeeplyMergedAttributes(Attributes $other): Attributes
+    {
+        $attributes = $this->attributes;
+
+        foreach ($other as $attribute) {
+            if ($this->hasAttribute($attribute->getName()) && !$attribute->isBoolean()) {
+                $attributes[(string) $attribute->getName()] = $this
+                    ->getAttribute($attribute->getName())
+                    ->withAppendedValue($attribute->getValue());
+            } else {
+                $attributes[(string) $attribute->getName()] = $attribute;
+            }
+        }
+
+        return new self($attributes);
+    }
+
+    /**
+     * @param Attributes $other
      * @return boolean
      */
     public function equals(Attributes $other): bool
     {
         foreach ($other->getAttributes() as $attribute) {
-            if (isset($this->attributes[$attribute->getName()])) {
-                if (!$attribute->equals($this->attributes[$attribute->getName()])) {
+            if ($this->hasAttribute($attribute->getName())) {
+                if (!$attribute->equals($this->getAttribute($attribute->getName()))) {
                     return false;
                 }
             }

@@ -12,22 +12,6 @@ final class AttributeIsInvalid extends \DomainException
     }
 
     /**
-     * @param string $attemptedName
-     * @param string $pattern
-     * @return self
-     */
-    public static function becauseItsNameDoesNotMatchTheRequiredPattern(string $attemptedName, string $pattern): self
-    {
-        return new self(
-            sprintf(
-                'Attribute name "%s" does not match required pattern "%s"',
-                $attemptedName,
-                $pattern
-            )
-        );
-    }
-
-    /**
      * @param string $name
      * @param string $attemptedValue
      * @return self
