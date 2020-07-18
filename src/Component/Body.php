@@ -22,6 +22,14 @@ final class Body implements ComponentInterface
     }
 
     /**
+     * @return self
+     */
+    public static function empty(): self
+    {
+        return new self(Children::fromArray([]));
+    }
+
+    /**
      * @return Children
      */
     public function getChildren(): Children
