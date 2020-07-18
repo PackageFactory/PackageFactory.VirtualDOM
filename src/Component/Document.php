@@ -54,11 +54,29 @@ final class Document implements ComponentInterface
     }
 
     /**
+     * @param Head $head
+     * @return self
+     */
+    public function withHead(Head $head): self
+    {
+        return new self($this->doctype, $head, $this->body);
+    }
+
+    /**
      * @return Body
      */
     public function getBody(): Body
     {
         return $this->body;
+    }
+
+    /**
+     * @param Body $body
+     * @return self
+     */
+    public function withBody(Body $body): self
+    {
+        return new self($this->doctype, $this->head, $body);
     }
 
     /**
