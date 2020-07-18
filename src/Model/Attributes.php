@@ -29,7 +29,11 @@ final class Attributes implements \IteratorAggregate, \Countable
                 throw AttributeCannotBeCreated::becauseSourceArrayIsNotAssociative();
             }
 
-            $attributes[$name] = Attribute::fromNameAndValue($name, $value);
+            if ($value instanceof Attribute) {
+                $attributes[$name] = $value;
+            } else {
+                $attributes[$name] = Attribute::fromNameAndValue($name, $value);
+            }
         }
 
         return new self($attributes);
