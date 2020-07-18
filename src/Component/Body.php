@@ -43,10 +43,7 @@ final class Body implements ComponentInterface
      */
     public function withChildren(Children $children): self
     {
-        return new self(
-            $this->attributes,
-            $children
-        );
+        return new self($children);
     }
 
     /**
