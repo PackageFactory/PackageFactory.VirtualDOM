@@ -1,97 +1,90 @@
 <?php declare(strict_types=1);
 namespace PackageFactory\KristlBol\Domain;
 
-use PackageFactory\VirtualDOM\Attributes;
-use PackageFactory\VirtualDOM\Element;
-use PackageFactory\VirtualDOM\ElementType;
-use PackageFactory\VirtualDOM\Node;
-use PackageFactory\VirtualDOM\NodeList;
-use PackageFactory\VirtualDOM\Rendering\RenderableInterface;
+use PackageFactory\VirtualDOM\Component\Link;
+use PackageFactory\VirtualDOM\Model\ComponentInterface;
+use PackageFactory\VirtualDOM\Model\Element;
+use PackageFactory\VirtualDOM\Model\VisitorInterface;
 
-final class Head implements RenderableInterface
+final class Head implements ComponentInterface
 {
     /**
-     * @var Attributes
+     * @var string
      */
-    private $attributes;
+    private $title;
 
     /**
-     * @var NodeList
+     * @var array|Meta[]
      */
-    private $children;
+    private $metas;
 
     /**
-     * @param Attributes $attributes
-     * @param NodeList $children
+     * @var array|Link[]
      */
-    private function __construct(
-        Attributes $attributes,
-        NodeList $children
-    ) {
-        $this->attributes = $attributes;
-        $this->children = $children;
-    }
+    private $links;
 
     /**
-     * @return self
+     * @var array|Script[]
      */
-    public static function empty(): self
-    {
-        return new self(
-            Attributes::createEmpty(),
-            NodeList::createEmpty()
-        );
-    }
-
-    /**
-     * @return Attributes
-     */
-    public function getAttributes(): Attributes
-    {
-        return $this->attributes;
-    }
-
-    /**
-     * @param Attributes $attributes
-     * @return self
-     */
-    public function withAttributes(Attributes $attributes): self
-    {
-        return new self (
-            $attributes,
-            $this->children
-        );
-    }
-
-    /**
-     * @return NodeList
-     */
-    public function getChildren(): NodeList
-    {
-        return $this->children;
-    }
+    private $scripts;
 
     /**
      * @param NodeList $children
-     * @return self
      */
-    public function withChildren(NodeList $children): self
+    private function __construct(string $title, array $metas, array $links, array $scripts) 
     {
-        return new self(
-            $this->attributes,
-            $children
-        );
+        $this->title = $title;
+        $this->metas = $metas;
+        $this->links = $links;
+        $this->scripts = $scripts;
     }
 
     /**
-     * @return Node
+     * @return self
      */
-    public function getAsVirtualDOMNode(): Node
+    public static function fromTitle(string $title): self
     {
-        return Element::create(
-            ElementType::fromTagName('head'),
-            $this->attributes,
-            $this->children
+        return new self($title, [], [], []);
+    }
+
+    /**
+     * @param Meta $meta
+     * @return self
+     */
+    public function withMeta(Meta $meta): self
+    {
+        return new self($this->title, array_merge($this->metas, [$meta]), $this->links, $this->scripts);
+    }
+
+    /**
+     * @param Link $link
+     * @return self
+     */
+    public function withLink(Link $link): self
+    {
+        return new self($this->title, $this->metas, array_merge($this->links, [$link]), $this->scripts);
+    }
+
+    /**
+     * @param Script $script
+     * @return self
+     */
+    public function withScript(Script $script): self
+    {
+        return new self($this->title, $this->metas, $this->links, array_merge($this->scripts, [$script]));
+    }
+
+    /**
+     * @param VisitorInterface $visitor
+     * @return void
+     */
+    public function render(VisitorInterface $visitor): void
+    {
+        $visitor->onElement(
+            Element::fromArray([
+                'name' => 'head',
+                'children' => $this->children
+            ])
         );
     }
 }

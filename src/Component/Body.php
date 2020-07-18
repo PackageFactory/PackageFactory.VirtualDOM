@@ -1,81 +1,39 @@
 <?php declare(strict_types=1);
 namespace PackageFactory\KristlBol\Domain;
 
-use PackageFactory\VirtualDOM\Attributes;
-use PackageFactory\VirtualDOM\Element;
-use PackageFactory\VirtualDOM\ElementType;
-use PackageFactory\VirtualDOM\Node;
-use PackageFactory\VirtualDOM\NodeList;
-use PackageFactory\VirtualDOM\Rendering\RenderableInterface;
+use PackageFactory\VirtualDOM\Model\Children;
+use PackageFactory\VirtualDOM\Model\ComponentInterface;
+use PackageFactory\VirtualDOM\Model\Element;
+use PackageFactory\VirtualDOM\Model\VisitorInterface;
 
-final class Body implements RenderableInterface
+final class Body implements ComponentInterface
 {
     /**
-     * @var Attributes
-     */
-    private $attributes;
-
-    /**
-     * @var NodeList
+     * @var Children
      */
     private $children;
 
     /**
-     * @param Attributes $attributes
      * @param NodeList $children
      */
-    private function __construct(
-        Attributes $attributes,
-        NodeList $children
-    ) {
-        $this->attributes = $attributes;
+    private function __construct(Children $children) 
+    {
         $this->children = $children;
     }
 
     /**
-     * @return self
+     * @return Children
      */
-    public static function empty(): self
-    {
-        return new self(
-            Attributes::createEmpty(),
-            NodeList::createEmpty()
-        );
-    }
-
-    /**
-     * @return Attributes
-     */
-    public function getAttributes(): Attributes
-    {
-        return $this->attributes;
-    }
-
-    /**
-     * @param Attributes $attributes
-     * @return self
-     */
-    public function withAttributes(Attributes $attributes): self
-    {
-        return new self (
-            $attributes,
-            $this->children
-        );
-    }
-
-    /**
-     * @return NodeList
-     */
-    public function getChildren(): NodeList
+    public function getChildren(): Children
     {
         return $this->children;
     }
 
     /**
-     * @param NodeList $children
+     * @param Children $children
      * @return self
      */
-    public function withChildren(NodeList $children): self
+    public function withChildren(Children $children): self
     {
         return new self(
             $this->attributes,
@@ -84,14 +42,16 @@ final class Body implements RenderableInterface
     }
 
     /**
-     * @return Node
+     * @param VisitorInterface $visitor
+     * @return void
      */
-    public function getAsVirtualDOMNode(): Node
+    public function render(VisitorInterface $visitor): void
     {
-        return Element::create(
-            ElementType::fromTagName('body'),
-            $this->attributes,
-            $this->children
+        $visitor->onElement(
+            Element::fromArray([
+                'name' => 'body',
+                'children' => $this->children
+            ])
         );
     }
 }

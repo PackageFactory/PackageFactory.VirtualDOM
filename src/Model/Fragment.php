@@ -28,6 +28,31 @@ final class Fragment implements ComponentInterface
     }
 
     /**
+     * @param \XMLReader $reader
+     * @return self
+     */
+    public static function fromXMLReader(\XMLReader $reader): self
+    {
+        $children = [];
+        do {
+            switch ($reader->nodeType) {
+                case \XMLReader::ELEMENT: 
+                    $children[] = Element::fromXMLReader($reader);
+                    break;
+                case \XMLReader::TEXT: 
+                    $children[] =  Text::fromXMLReader($reader);
+                    break;
+                case \XMLReader::END_ELEMENT:
+                    break 2;
+                default: throw FragmentCannotBeCreated::
+                    becauseEncounteredNodeTypeCannotBeHandled($reader->nodeType);
+            }
+        } while ($reader->read() !== false);
+
+        return self::fromArray($children);
+    }
+
+    /**
      * @return Children
      */
     public function getChildren(): Children
@@ -41,7 +66,7 @@ final class Fragment implements ComponentInterface
      */
     public function withChildren(Children $children): self
     {
-        return new self($this->name, $this->attributes, $children);
+        return new self($children);
     }
 
     /**

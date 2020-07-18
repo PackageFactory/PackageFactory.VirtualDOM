@@ -37,6 +37,20 @@ final class Text implements ComponentInterface
     }
 
     /**
+     * @param \XMLReader $reader
+     * @return self
+     */
+    public static function fromXMLReader(\XMLReader $reader): self
+    {
+        if ($reader->nodeType === \XMLReader::TEXT) {
+            return self::fromDangerouslyUnescapedString($reader->value);
+        }
+
+        throw TextCannotBeCreated::
+            becauseEncounteredNodeTypeCannotBeHandled($reader->nodeType);
+    }
+
+    /**
      * @return string
      */
     public function __toString(): string

@@ -83,6 +83,36 @@ final class Element implements ComponentInterface
     }
 
     /**
+     * @param \XMLReader $reader
+     * @return self
+     */
+    public static function fromXMLReader(\XMLReader $reader): self
+    {
+        if ($reader->nodeType !== \XMLReader::ELEMENT) {
+            throw ElementCannotBeCreated::
+                becauseEncounteredNodeTypeCannotBeHandled($reader->nodeType);
+        }
+
+        $name = ElementName::fromString($reader->name);
+        $attributes = [];
+        $children = [];
+
+        while ($reader->read() !== false) {
+            switch ($reader->nodeType) {
+                case \XMLReader::TEXT:
+                    $children[] = Text::fromXMLReader($reader);
+                    break;
+                case \XMLReader::END_ELEMENT:
+                    break 2;
+                default: throw ElementCannotBeCreated::
+                    becauseEncounteredNodeTypeCannotBeHandled($reader->nodeType);
+            }
+        }
+
+        return new self($name, Attributes::fromArray($attributes), Children::fromArray($children));
+    }
+
+    /**
      * @return ElementName
      */
     public function getName(): ElementName

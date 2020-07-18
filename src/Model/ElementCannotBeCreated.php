@@ -77,4 +77,26 @@ final class ElementCannotBeCreated extends \DomainException
             )
         );
     }
+
+    /**
+     * @param mixed $attemptedValue
+     * @return self
+     */
+    public static function becauseEncounteredNodeTypeCannotBeHandled($attemptedValue): self
+    {
+        return new self(
+            sprintf(
+                'Only XML nodes of type ELEMENT or TEXT can be handled, but node of type "%s" was encountered.',
+                $attemptedValue
+            )
+        );
+    }
+
+    /**
+     * @return self
+     */
+    public static function becauseXMLReaderEndedUnexpectedly(): self
+    {
+        return new self('XMLReader ended unexpectedly.');
+    }
 }

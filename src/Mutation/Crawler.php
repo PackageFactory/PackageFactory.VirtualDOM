@@ -36,14 +36,13 @@ final class Crawler implements VisitorInterface
     public function onElement(Element $element): void
     {
         $callback = $this->callback;
-        $this->result = $callback($element);
-
+        
         $children = [];
-        foreach ($this->result->getChildren() as $child) {
-            $children[] = self::crawl($child, $this->callback);
+        foreach ($element->getChildren() as $child) {
+            $children[] = self::crawl($child, $callback);
         }
-
-        $this->result = $this->result->withChildren(Children::fromArray($children));
+        
+        $this->result = $callback($element->withChildren(Children::fromArray($children)));
     }
 
     /**
