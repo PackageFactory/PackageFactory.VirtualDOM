@@ -55,12 +55,25 @@ final class Stringifier
     }
 
     /**
-     * @param mixed $object
+     * @param mixed $value
      * @return string
      */
-    public static function stringifyObject($object): string
+    public static function stringifyObject($value): string
     {
-        // @TODO: stringify object
-        return '[object]';
+        if (!is_object($value)) {
+            throw new \InvalidArgumentException(
+                sprintf('$value must be of type object. Got "%s" instead.', gettype($value))
+            );
+        }
+
+        $result = [];
+
+        foreach ($value as $key => $segment) {
+            if ($segment) {
+                $result[] = $key;
+            }
+        }
+
+        return trim(implode(' ', $result));
     }
 }
