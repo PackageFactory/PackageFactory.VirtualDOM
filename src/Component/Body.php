@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-namespace PackageFactory\KristlBol\Domain;
+namespace PackageFactory\VirtualDOM\Component;
 
 use PackageFactory\VirtualDOM\Model\Children;
 use PackageFactory\VirtualDOM\Model\ComponentInterface;
